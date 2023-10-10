@@ -1,0 +1,21 @@
+FROM node:20.5.1-bookworm-slim
+
+WORKDIR /usr/src/app
+
+RUN chown -R node:node /usr/src/app
+
+# copy and install packages
+COPY ./package*.json ./
+RUN npm ci
+
+USER node
+
+# copy rest of files
+COPY --chown=node:node . .
+
+RUN npm run build
+
+EXPOSE 5173
+
+CMD ["npm", "start"]
+
