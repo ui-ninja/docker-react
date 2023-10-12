@@ -30,5 +30,7 @@ jobs:
         run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
       - name: build docker image
         run: docker build . --file Dockerfile --tag docker-react-frontend
+      - name: tag docker image
+        run: docker tag docker-react-frontend rishabh2974/docker-react-frontend
       - name: push docker image
         run: docker push rishabh2974/docker-react-frontend:latest
