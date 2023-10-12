@@ -5,8 +5,8 @@ on:
     branches: [master]
 
 jobs:
-  test:
-    name: Install dependencies and run unit tests
+  setup:
+    name: Run unit tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,10 +17,18 @@ jobs:
         run: npm ci
       - name: Run unit tests
         run: npm test
-  docker:
-    name: Create docker image
+  deploy:
+    name: deploy docker image
     runs-on: ubuntu-latest
+    needs: setup
     steps:
       - uses: actions/checkout@v4
-      - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker build -t rishabh/docker-frontend .
+      - name: Login dockerhub
+        env:
+          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - name: build docker image
+        run: docker build . --file Dockerfile --tag docker-react-frontend
+      - name: push docker image
+        run: docker push rishabh2974/docker-react-frontend:latest
